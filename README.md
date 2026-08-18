@@ -8,6 +8,8 @@
 ![License](https://img.shields.io/badge/License-MIT-green)
 ![Tests](https://img.shields.io/badge/Tests-pytest-blue)
 
+🚀 **Live Demo:** [fake-news-detection-six-theta.vercel.app](https://fake-news-detection-six-theta.vercel.app)
+
 ---
 
 ## Overview
