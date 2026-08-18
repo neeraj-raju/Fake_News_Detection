@@ -338,9 +338,6 @@ MODEL_PATH=outputs/pipeline.joblib
 # CORS (Frontend URLs)
 CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000,http://127.0.0.1:3000
 
-# Database
-MONGODB_URI=mongodb://localhost:27017
-MONGODB_DATABASE=fake_news_detection
 
 # Optional API Keys (leave empty to skip provider)
 GOOGLE_FACTCHECK_API_KEY=
@@ -363,21 +360,6 @@ cp backend/.env.example backend/.env
 
 The same configuration applies; both files are checked by the application.
 
-### MongoDB Setup (Optional)
-
-If you want to persist analysis history:
-
-```bash
-# Start MongoDB (ensure it's installed)
-mongod --dbpath ./db_data
-
-# Or use a MongoDB service/container
-docker run -d -p 27017:27017 --name mongodb mongo:latest
-```
-
-If MongoDB is unavailable, the application continues without persistence.
-
----
 
 ## Usage
 
@@ -482,9 +464,6 @@ Fake_News_Detection/
 │       │   ├── routes_health.py       # Health check
 │       │   ├── routes_history.py      # History management
 │       │   └── routes_metrics.py      # Model metrics
-│       ├── database/                  # MongoDB integration
-│       │   ├── connection.py          # Async connection
-│       │   └── repositories.py        # Data access layer
 │       ├── models/                    # Pydantic schemas
 │       │   └── schemas.py             # Request/response models
 │       ├── providers/                 # External API providers
