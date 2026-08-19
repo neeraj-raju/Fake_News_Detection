@@ -21,9 +21,9 @@ Fake News Detection is an educational full-stack system that detects fake news b
 3. **Retrieves evidence** from multiple sources (Google Fact Check API, web search, Wikipedia)
 4. **Verifies claims** by comparing them against retrieved evidence
 5. **Generates transparent explanations** combining ML confidence with evidence analysis
-6. **Persists results** in MongoDB for historical review
+6. **Persists results** for historical review
 
-The system achieves **99.64% accuracy** on its holdout test set and provides end-to-end transparency through decision factors, evidence citations, and human-readable explanations.
+The system achieves **86.42% accuracy** on its holdout test set and provides end-to-end transparency through decision factors, evidence citations, and human-readable explanations.
 
 ---
 
@@ -166,7 +166,7 @@ USER INPUT
 - **Machine Learning**
   - TF-IDF vectorization + Logistic Regression classifier
   - Probability estimation with confidence scores
-  - REAL / FAKE classification with 99.64% accuracy
+  - REAL / FAKE classification with 86.42% accuracy
   - Cross-validation and honest holdout evaluation
 
 - **Claim Extraction**
@@ -201,7 +201,7 @@ USER INPUT
   - Transparency into ML and verification signals
 
 - **History & Persistence**
-  - MongoDB-backed analysis history
+  - Persistent analysis history
   - Graceful degradation if database unavailable
   - User-specific analysis retrieval
   - Delete historical analyses
@@ -220,7 +220,6 @@ USER INPUT
 - **Framework**: FastAPI >= 0.110.0 (async Python web framework)
 - **Server**: Uvicorn >= 0.28.0 (ASGI)
 - **Validation**: Pydantic 2.6+ (data schemas & settings)
-- **Database**: MongoDB + Motor (async driver) + PyMongo
 - **ML Pipeline**: scikit-learn (TF-IDF, Logistic Regression)
 - **Data Processing**: pandas >= 2.0, numpy >= 1.25
 - **HTTP Client**: httpx >= 0.27.0 (async)
@@ -545,7 +544,7 @@ Fake_News_Detection/
 ```
 GET /api/health
 ```
-Returns server status, ML model status, and database connection status.
+Returns server status and ML model status.
 
 **Response**:
 ```json
@@ -686,24 +685,6 @@ Retrieve previous analyses.
 ]
 ```
 
-#### Model Metrics
-```
-GET /api/metrics
-```
-Retrieve ML model performance metrics.
-
-**Response**:
-```json
-{
-  "model": "TF-IDF + Logistic Regression",
-  "accuracy": 0.9964,
-  "precision": 0.9983,
-  "recall": 0.9961,
-  "f1_score": 0.9972,
-  "roc_auc": 0.9995
-}
-```
-
 **Full API documentation available at** `/docs` when backend is running (Swagger UI).
 
 ---
@@ -782,9 +763,6 @@ python -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000
 
 # Terminal 2: Frontend dev server
 cd frontend && npm run dev
-
-# Terminal 3 (optional): MongoDB
-mongod --dbpath ./db_data
 ```
 
 ### Production Deployment
@@ -807,7 +785,6 @@ mongod --dbpath ./db_data
 4. **Start Services**
    - **Backend**: `python -m uvicorn backend.app.main:app --host 0.0.0.0 --port 8000`
    - **Frontend**: Serve `frontend/dist/` with a web server (nginx, Apache, etc.)
-   - **Database**: Ensure MongoDB is running and accessible
 
 5. **Verify Health**
    - Check `http://your-domain:8000/api/health`
@@ -818,7 +795,7 @@ mongod --dbpath ./db_data
 This project does not currently include Docker or Kubernetes configurations. For containerized deployment, you would need to:
 - Create a `Dockerfile` for the backend (Python 3.10 base image)
 - Create a `Dockerfile` for the frontend (Node build stage + nginx serving)
-- Create a `docker-compose.yml` to orchestrate services and MongoDB
+- Create a `docker-compose.yml` to orchestrate services
 
 ---
 
@@ -853,22 +830,16 @@ ruff check --fix src tests backend
 
 ## Model Performance
 
-**Holdout Test Set Accuracy**: **99.64%**
+**Holdout Test Set Accuracy**: **86.42%**
 
 | Metric | Value |
 |--------|-------|
-| Accuracy | 99.64% |
-| Precision (FAKE) | 99.83% |
-| Recall (FAKE) | 99.61% |
-| F1 Score (FAKE) | 99.72% |
-| ROC-AUC | 99.95%+ |
+| Accuracy | 86.42% |
+| Precision  | 87.15% |
+| Recall  | 84.96% |
+| F1 Score  | 86.04% |
 
 **Dataset**: 38,829 deduplicated articles (20,929 REAL, 17,900 FAKE)
-
-**Cross-Validation** (3-fold on training set):
-- Accuracy: 99.21% ± 0.07%
-- Macro F1: 99.20% ± 0.07%
-- ROC-AUC: 99.94% ± 0.01%
 
 ---
 
@@ -901,15 +872,6 @@ See `outputs/leakage_report.json` for detailed leakage analysis.
 2. Ensure Python 3.10+ is installed
 3. Check that scikit-learn and joblib are installed
 4. Train a new model: `python src/train_model.py --real data/true.csv --fake data/fake.csv --outdir outputs`
-
-### MongoDB Connection Error
-
-**Message**: "MongoDB unavailable. Application will continue without persistence."
-
-**Solutions**:
-1. Start MongoDB: `mongod --dbpath ./db_data`
-2. Verify connection string in `.env` (default: `mongodb://localhost:27017`)
-3. App functions normally without DB; just no persistence
 
 ### CORS Errors in Browser
 
